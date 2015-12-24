@@ -1,0 +1,36 @@
+{
+    "entries": [
+        {
+            "dn": "cn=Aaron Nash,dc=janrain,dc=com",
+            "entry": {
+                "cn": [
+                    "Aaron Nash"
+                ],
+                "objectClass": [
+                    "inetOrgPerson",
+                    "posixAccount",
+                    "ldapPublicKey",
+                    "top"
+                ],
+                "loginShell": [
+                    "/bin/bash"
+                ],
+                "gidNumber": [
+                    "500"
+                ],
+                "sn": [
+                    "Nash"
+                ],
+                "homeDirectory": [
+                    "/home/anash"
+                ],
+                "givenName": [
+                    "Aaron"
+                ],
+                "uid": [
+                    "anash"
+                ]
+            }
+        }
+    ]
+}
