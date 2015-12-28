@@ -2,9 +2,7 @@
 #
 # Author: Aaron Nash
 
-import argparse
-
-entry_types = ['user', 'group', 'sudoer']
+import sys, json, argparse, entries, ldifutils, defaults
 
 def num_entries(s):
     gathered = s.split(':', 1)
@@ -12,22 +10,49 @@ def num_entries(s):
         gathered.append(1)
     try:
         gathered[1] = int(gathered[1])
-        if gathered[0] in entry_types and gathered[1] >= 1:
+        if gathered[0] in defaults.ENTRY_TYPES and gathered[1] >= 1:
             return gathered[0], gathered[1]
         else:
             raise Exception
     except Exception:
         raise argparse.ArgumentTypeError("Accepts 'ENTRY-TYPE' | 'ENTRY-TYPE:N(>0)'")
 
+def make_interactive(entry_list, bill):
+    entry_list = []
+    print "Creating %s %s entries. Attributes left 'empty' will not be included in entry." % (str(bill[1]), bill[0])
+    for i in range(0, bill[1]):
+        name = raw_input("Name of new %s: " % bill[0])
+        entry = entries.EntryFactory.create_entry(bill[0], name)
+        entry.populate_defaults()
+        print "Creating dn: %s" % entry['dn']
+        print "Update values or press Enter to accept defaults\n"
+        for key in entry['entry']:
+            if key != 'objectClass':
+                temp_value = raw_input("%s (%s): " % (key, entry['entry'][key][0]))
+        print
+        entry_list.append(entry)
+    return entries.EntryCollection(entry_list = entry_list)
+
 def init(args):
+    print "Doing setup stuff..."
     # TODO
 
 def init_add(args):
     # Do general setup tasks
     init(args)
-    new_entry_list = []
+    new_entries = []
+    collection = {}
+    # Read in existing entries from input file if -r
+    # ...
+    # Check the types/number of entries read and walk through prompt for each entry if -i
     if args.interactive != None:
-
+        collection = make_interactive(new_entries, args.interactive)
+    # Append to LDIF file if -d
+    out = ldifutils.Unparser(sys.stdout)
+    for entry in collection['entries']:
+        out.write(entry['dn'], ldifutils.get_add_mod_list(entry['entry']))
+    # Overwrite JSON file if -j
+    # ...
 
 def init_delete(args):
     # Do general setup tasks
@@ -43,8 +68,6 @@ def init_move(args):
     # Do general setup tasks
     init(args)
     # TODO
-
-def add_interactive
 
 # Global parser and arguments
 parser_ldap = argparse.ArgumentParser(
@@ -73,7 +96,7 @@ parser_add = subparsers.add_parser('add-entries', help = 'add-entries help')
 parser_add.add_argument(
     '-i', action = 'store', dest = 'interactive', type = num_entries,
     metavar = 'ENTRY-TYPE:N(>0)', default = None,
-    help = "create or edit one or more entries interactively"
+    help = "create/edit/validate one or more entries interactively"
 )
 parser_add.set_defaults(func = init_add)
 

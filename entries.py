@@ -19,7 +19,7 @@ class Entry(dict):
 
 class UserEntry(Entry):
     def __init__(self, name, **kwargs):
-        super(Entry, self).__init__(cn = name, ou = defaults.ORGANIZATIONAL_UNITS['users'], **kwargs)
+        super(UserEntry, self).__init__(cn = name, ou = 'Users', **kwargs)
 
     def populate_defaults(self):
         name = self['entry']['cn'][0].split(' ')
@@ -37,14 +37,14 @@ class UserEntry(Entry):
 
 class GroupEntry(Entry):
     def __init__(self, name, **kwargs):
-        super(Entry, self).__init__(cn = Name, ou = defaults.ORGANIZATIONAL_UNITS['groups'], **kwargs)
+        super(GroupEntry, self).__init__(cn = name, ou = 'Groups', **kwargs)
 
     def populate_defaults(self):
         self['entry']['objectClass'] = defaults.G_OBJECTS
 
 class SudoEntry(Entry):
     def __init__(self, name, **kwargs):
-        super(Entry, self).__init__(cn = name, ou = defaults.ORGANIZATIONAL_UNITS['sudoers'], **kwargs)
+        super(SudoEntry, self).__init__(cn = name, ou = 'SUDOers', **kwargs)
 
     def populate_defaults(self):
         self['entry']['sudoUser'] = [self['entry']['cn'][0]]
@@ -53,9 +53,13 @@ class SudoEntry(Entry):
         self['entry']['objectClass'] = defaults.S_OBJECTS
 
 class EntryFactory():
-    entry_types = {'user': UserEntry, 'group': GroupEntry, 'sudoer': SudoEntry}
     @staticmethod
     def create_entry(type_string, name, **kwargs):
+        entry_types = {
+            'user': UserEntry,
+            'group': GroupEntry,
+            'sudoer': SudoEntry
+        }
         return entry_types[type_string](name, **kwargs)
 
 class EntryCollection(dict):

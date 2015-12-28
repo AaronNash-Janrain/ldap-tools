@@ -8,11 +8,8 @@ BINDDN = 'cn=admin,dc=janrain,dc=com'
 # Database defaults
 BASE = 'dc=janrain,dc=com'
 
-ORGANIZATIONAL_UNITS = {
-    'users': 'Users',
-    'groups': 'Groups',
-    'sudoers': 'SUDOers'
-}
+# Acceptable cli/file input to the correct entry (object) types
+ENTRY_TYPES = ['user', 'group', 'sudoer']
 
 # New user defaults
 GID = '500'
