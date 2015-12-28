@@ -8,6 +8,12 @@ BINDDN = 'cn=admin,dc=janrain,dc=com'
 # Database defaults
 BASE = 'dc=janrain,dc=com'
 
+ORGANIZATIONAL_UNITS = {
+    'users': 'Users',
+    'groups': 'Groups',
+    'sudoers': 'SUDOers'
+}
+
 # New user defaults
 GID = '500'
 HOME = '/home/'

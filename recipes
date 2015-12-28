@@ -1,0 +1,29 @@
+Deleting a LDAP user should:
+
++ Remove them from all groups they belonged to
+  = Get list of all group dns a user belonged to
+  = Remove memberUid attribute for that user from each group
++ Remove them from any sudoRoles explicitly referencing the user
+  = (fill in)
++ Remove the user's entry in ou=Users
+
+----------------------------------------------------------------------------
+Deleting a LDAP group should:
+
++ Remove all sudoRoles that reference the group
+  = (fill in)
++ Remove the group's entry in ou=Groups
+
+----------------------------------------------------------------------------
+Deleting a ldap SUDOer should:
+
++ Remove the sudoRole's entry in ou=SUDOers
+
+----------------------------------------------------------------------------
+Changing a user's uid should:
+
++ Change their memberUid in any groups they belong to
+  = (fill in)
++ Change their name in any sudoRoles that explicitly reference them
+  = (fill in)
++ Change their uid in their entry in ou=Users

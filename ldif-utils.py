@@ -1,4 +1,5 @@
 from ldif import LDIFWriter, LDIFParser
+from ldap import modlist
 
 class Parser(LDIFParser):
 	def __init__(self, input):
@@ -20,6 +21,11 @@ class Unparser():
 	def __init__(self, output):
 		self.writer = LDIFWriter(output)
 
-	def write(self, data):
-		for entry in data['entries']:
-			self.writer.unparse(entry['dn'], entry['entry'])
+	def write(self, dn, entry_or_modlist):
+		self.writer.unparse(dn, entry_or_modlist)
+
+def get_add_mod_list(entry):
+	return modlist.addModlist(entry)
+
+def get_modify_mod_list(old_entry, new_entry):
+	return modlist.modifyModList(old_entry, new_entry)
