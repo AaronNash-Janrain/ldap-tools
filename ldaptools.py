@@ -21,6 +21,7 @@ def make_interactive(entry_list, bill):
     entry_list = []
     print "Creating %s %s entries. Attributes left 'empty' will not be included in entry." % (str(bill[1]), bill[0])
     for i in range(0, bill[1]):
+        updates = []
         name = raw_input("Name of new %s: " % bill[0])
         entry = entries.EntryFactory.create_entry(bill[0], name)
         entry.populate_defaults()
@@ -29,17 +30,15 @@ def make_interactive(entry_list, bill):
         for key in entry['entry']:
             if key != 'objectClass':
                 temp_value = raw_input("%s (%s): " % (key, entry['entry'][key][0]))
+                if temp_value != '': updates.append((key, [temp_value]))
         print
+        if len(updates) > 0: entry.update(updates)
         entry_list.append(entry)
     return entries.EntryCollection(entry_list = entry_list)
 
-def init(args):
-    print "Doing setup stuff..."
-    # TODO
-
 def init_add(args):
     # Do general setup tasks
-    init(args)
+    #init(args)
     new_entries = []
     collection = {}
     # Read in existing entries from input file if -r
@@ -48,25 +47,27 @@ def init_add(args):
     if args.interactive != None:
         collection = make_interactive(new_entries, args.interactive)
     # Append to LDIF file if -d
-    out = ldifutils.Unparser(sys.stdout)
+    out = ldifutils.Unparser(
+        sys.stdout
+        if args.ldif_out_path == None
+        else open(args.ldif_out_path, 'w')
+    )
     for entry in collection['entries']:
         out.write(entry['dn'], ldifutils.get_add_mod_list(entry['entry']))
+    if args.ldif_out_path != None: print "LDIF written to %s" % args.ldif_out_path
     # Overwrite JSON file if -j
     # ...
 
 def init_delete(args):
-    # Do general setup tasks
-    init(args)
+    raise NotImplementedError
     # TODO
 
 def init_modify(args):
-    # Do general setup tasks
-    init(args)
+    raise NotImplementedError
     # TODO
 
 def init_move(args):
-    # Do general setup tasks
-    init(args)
+    raise NotImplementedError
     # TODO
 
 # Global parser and arguments
@@ -79,12 +80,14 @@ parser_ldap.add_argument(
 )
 parser_ldap.add_argument(
     '-d', action = 'store', dest = 'ldif_out_path', metavar = 'PATH',
-    help = """write the resulting LDIF to a file at PATH
+    default = None,
+    help = """write the resulting LDIFs to a file at PATH instead of stdout
             (if the file already exists any new entries will be appended to any existing entries)"""
 )
 parser_ldap.add_argument(
     '-j', action = 'store', dest = 'json_out_path', metavar = 'PATH',
-    help = """write a JSON representation of the resulting LDIF to a file at PATH
+    default = None,
+    help = """write a JSON representation of the resulting LDIFs to a file at PATH
             (if the file already exists any new entries will be appended to any existing entries)"""
 )
 

@@ -14,12 +14,30 @@ class Entry(dict):
             entry = entry
         )
 
+    def update(self, *args, **kwargs):
+        if args:
+            if len(args) > 1: raise TypeError("Update expects at most one iterable argument")
+            other = dict(args[0])
+        else:
+            other = kwargs
+        for k, v, in other.items():
+            if k == 'dn' or k == 'entry':
+                self[k] = v
+            else:
+                if k == 'cn':
+                    try:
+                        dn_suffix = self['dn'][self['dn'].find(',ou'):]
+                        self['dn'] = "cn=%s%s" % (v[0], dn_suffix)
+                    except KeyError:
+                        raise TypeError("Changing cn would overwrite dn, which requires ou=")
+                self['entry'][k] = v
+
     def populate_defaults(self):
         raise NotImplementedError
 
 class UserEntry(Entry):
     def __init__(self, name, **kwargs):
-        super(UserEntry, self).__init__(cn = name, ou = 'Users', **kwargs)
+        super(UserEntry, self).__init__(cn = name, ou = defaults.UOU, **kwargs)
 
     def populate_defaults(self):
         name = self['entry']['cn'][0].split(' ')
@@ -37,14 +55,14 @@ class UserEntry(Entry):
 
 class GroupEntry(Entry):
     def __init__(self, name, **kwargs):
-        super(GroupEntry, self).__init__(cn = name, ou = 'Groups', **kwargs)
+        super(GroupEntry, self).__init__(cn = name, ou = defaults.GOU, **kwargs)
 
     def populate_defaults(self):
         self['entry']['objectClass'] = defaults.G_OBJECTS
 
 class SudoEntry(Entry):
     def __init__(self, name, **kwargs):
-        super(SudoEntry, self).__init__(cn = name, ou = 'SUDOers', **kwargs)
+        super(SudoEntry, self).__init__(cn = name, ou = defaults.SOU, **kwargs)
 
     def populate_defaults(self):
         self['entry']['sudoUser'] = [self['entry']['cn'][0]]

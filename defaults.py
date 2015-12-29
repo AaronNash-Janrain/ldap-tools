@@ -12,15 +12,18 @@ BASE = 'dc=janrain,dc=com'
 ENTRY_TYPES = ['user', 'group', 'sudoer']
 
 # New user defaults
+UOU = 'Users'
 GID = '500'
 HOME = '/home/'
 SHELL = '/bin/bash'
 U_OBJECTS = ['inetOrgPerson', 'posixAccount', 'ldapPublicKey', 'top']
 
 # New group defaults
+GOU = "Groups"
 G_OBJECTS = ['posixGroup', 'top']
 
 # New suoder defaults
-S_OBJECTS = ['sudoRole', 'top']
+SOU = 'SUDOers'
 COMMANDS = 'ALL'
 HOSTS = 'ALL'
+S_OBJECTS = ['sudoRole', 'top']
